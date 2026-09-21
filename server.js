@@ -20,6 +20,9 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
   const PORT = process.env.PORT;
 
+
+app.use("/api/order", orderRouter);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
