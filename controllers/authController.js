@@ -50,7 +50,6 @@ export async function sendOtp(req, res) {
     `,
         });
 
-        console.log(`OTP for ${normalizedEmail}: ${otp}`);
 
 
 
