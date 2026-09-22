@@ -26,7 +26,7 @@ export async function sendOtp(req, res) {
         const normalizedEmail = email.toLowerCase();
 
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6-digit OTP
+        const otp = crypto.randomInt(100000, 1000000).toString(); // Generate 6-digit OTP
         const otpHash = hashOtp(otp);
 
         await Otp.deleteMany({ email: normalizedEmail }); // Delete any existing OTPs for this email
