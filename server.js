@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cartRoutes from "./routes/cartroutes.js";
 
 dotenv.config();
 const app = express();
 
+app.use("/api/cart", cartRoutes);
 
 
 app.get("/", (req, res) => {
@@ -21,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   const PORT = process.env.PORT;
 
 
-app.use("/api/order", orderRouter);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
