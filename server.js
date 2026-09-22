@@ -2,11 +2,17 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cartRoutes from "./routes/cartroutes.js";
+import authRouter from "./routes/authRoutes.js";
+import bodyParser from "body-parser";
+
 
 dotenv.config();
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use("/api/cart", cartRoutes);
+
+
 
 
 app.get("/", (req, res) => {
@@ -20,11 +26,10 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
     process.exit(1);
   });
 
+
+  app.use("/api/auth", authRouter);
+
   const PORT = process.env.PORT;
-
-
-
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
