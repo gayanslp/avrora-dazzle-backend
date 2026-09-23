@@ -16,7 +16,24 @@ export function getProfile(req, res) {
 
 
 export function updateProfile(req, res) {
-    
+
+    try{
+        const userid = req.user.userId;
+        if(!userid){
+            return res.status(400).json({
+                success: false,
+                message: 'User ID is required'
+            });
+        }
+
+        const { name, email, phone,  } = req.body;
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
 }
 
 export function isAdmin(req) {
@@ -25,6 +42,7 @@ export function isAdmin(req) {
             return true;
         } else {
             return false;
+
         }
     } catch (error) {
         res.status(500).json({
