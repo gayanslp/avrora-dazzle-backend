@@ -6,8 +6,8 @@ dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ to, subject, html }) => {
-    const { data, error } = await resend.emails.send({
-        from: 'onboarding@resend.dev',
+    return await resend.emails.send({
+        from: 'Avrora Dazzle <noreply@pnforders.me>',
         to,
         subject,
         html,
