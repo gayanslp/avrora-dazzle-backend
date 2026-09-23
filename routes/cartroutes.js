@@ -2,10 +2,12 @@ import express from 'express';
 
 
 import { getCart } from "../controllers/cartcontroller.js";
-//import { protect } from "../middleware/authmiddleware.js";
+import authMiddleware from '../middleware/authMiddleware.js';
+
+
 
 const router = express.Router();
 
-router.get('/', getCart);
+router.get('/', authMiddleware, getCart);
 
 export default router;
