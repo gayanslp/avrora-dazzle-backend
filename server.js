@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cartRoutes from "./routes/cartroutes.js";
 import authRouter from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
+import userRouter from "./routes/userRoutes.js";
 
 
 dotenv.config();
@@ -28,6 +29,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 
   app.use("/api/auth", authRouter);
+  app.use("/api/user", userRouter);
 
   const PORT = process.env.PORT;
 app.listen(PORT, () => {
