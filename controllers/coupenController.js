@@ -2,6 +2,9 @@ import Coupon from '../models/coupen.js';
 
 export const createCoupon = async (req, res) => {
     try {
+        if(req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
         const { code, value, expiresAt, type, minOrder } = req.body;
         const newCoupen = new Coupon({ code, value, expiresAt, type, minOrder });
         await newCoupen.save();
@@ -13,6 +16,9 @@ export const createCoupon = async (req, res) => {
 
 export const getAllCoupons = async (req, res) => {
     try {
+        if(req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
         const coupens = await Coupon.find();
         res.status(200).json(coupens);
     } catch (error) {
@@ -22,6 +28,9 @@ export const getAllCoupons = async (req, res) => {
 
 export const getCouponById = async (req, res) => {
     try {
+        if(req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
         const { code } = req.params;
         const coupen = await Coupon.findOne({ code });
         if (!coupen) {
@@ -35,6 +44,9 @@ export const getCouponById = async (req, res) => {
 
 export const updateCoupon = async (req, res) => {
     try {
+        if(req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
         const { code } = req.params;
         const updatedCoupen = await Coupon.findOneAndUpdate({ code }, req.body, { returnDocument: 'after' });
         if (!updatedCoupen) {
@@ -48,6 +60,9 @@ export const updateCoupon = async (req, res) => {
 
 export const deleteCoupon = async (req, res) => {
     try {
+        if(req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
         const { code } = req.params;
         const deletedCoupen = await Coupon.findOneAndDelete({ code });
         if (!deletedCoupen) {
