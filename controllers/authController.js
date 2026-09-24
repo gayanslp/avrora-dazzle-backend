@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import Otp from "../models/otp.js";
 import dotenv from 'dotenv';
 import sendEmail from '../utils/sendEmail.js';
-import User from "../models/User.js";      // ✅ Add this
+import User from "../models/user.js";      // ✅ Add this
 import jwt from 'jsonwebtoken';
 // 1. Send OTP to email
 
