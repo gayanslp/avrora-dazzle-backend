@@ -39,6 +39,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 
   app.use("/api/auth", authRouter);
+  app.use("/api/cart", cartRoutes);
   app.use("/api/user", userRouter);
 
   const PORT = process.env.PORT;
