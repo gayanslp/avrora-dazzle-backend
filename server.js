@@ -6,6 +6,8 @@ import cartRoutes from "./routes/cartroutes.js";
 import authRouter from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
+import paymentRouter from "./routes/paymentRoutes.js";
+
 import orderRoutes from "./routes/orderroutes.js";
 
 dotenv.config();
@@ -41,6 +43,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/auth", authRouter);
   app.use("/api/cart", cartRoutes);
   app.use("/api/user", userRouter);
+  app.use("/api/payment", paymentRouter);
   app.use("/api/order", orderRoutes);
 
   const PORT = process.env.PORT;
