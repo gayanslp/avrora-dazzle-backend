@@ -8,7 +8,9 @@ import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
 import coupenRouter from "./routes/coupenRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js"
+import paymentRouter from "./routes/paymentRoutes.js";
 
+import orderRoutes from "./routes/orderroutes.js";
 
 dotenv.config();
 const app = express();
@@ -45,6 +47,9 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/user", userRouter);
   app.use("/api/coupen", coupenRouter);
   app.use("/api/category", categoryRouter);
+  app.use("/api/payment", paymentRouter);
+  app.use("/api/order", orderRoutes);
+
   const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
