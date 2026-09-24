@@ -30,4 +30,4 @@ const couponSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Coupon', couponSchema);
+export default mongoose.model('Coupon', couponSchema);
