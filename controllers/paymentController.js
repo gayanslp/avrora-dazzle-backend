@@ -78,23 +78,32 @@ export async function handlePayHereNotification(req, res) {
     const order = await Order.findById(order_id);
     if (!order) return res.status(404).send('Order not found');
 
+    if (Number(payhere_amount).toFixed(2) !== Number(order.totalAmount).toFixed(2) || payhere_currency !== 'LKR') {
+      console.error('PayHere amount/currency mismatch for order', order_id);
+      return res.status(400).send('Amount mismatch');
+    }
+
     // Record or update transaction log
-    await Payment.create({
-      orderId: order._id,
-      paymentId: payment_id,
-      amount: payhere_amount,
-      currency: payhere_currency,
-      paymentMethod: method,
-      statusCode: status_code,
-      rawResponse: req.body
-    });
+    await Payment.findOneAndUpdate(
+      { paymentId: payment_id },
+      {
+        orderId: order._id,
+        paymentId: payment_id,
+        amount: payhere_amount,
+        currency: payhere_currency,
+        paymentMethod: method,
+        statusCode: status_code,
+        rawResponse: req.body
+      },
+      { upsert: true }
+    );
 
     // Check payment status code (2 = Success)
     if (status_code === '2') {
       order.status = 'Paid';
       order.paidAt = new Date();
       await order.save();
-    } else if (['0', '-1', '-2', '-3'].includes(status_code)) {
+    } else if (order.status !== 'Paid' && ['0', '-1', '-2'].includes(status_code)) {
       order.status = 'Payment_Failed';
       await order.save();
     }
