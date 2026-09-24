@@ -37,7 +37,6 @@ export const updateCoupon = async (req, res) => {
     try {
         const { code } = req.params;
         const updatedCoupen = await Coupon.findOneAndUpdate({ code }, req.body, { returnDocument: 'after' });
-        console.log('Updated Coupen:', updatedCoupen); 
         if (!updatedCoupen) {
             return res.status(404).json({ message: 'Coupen not found' });
         }

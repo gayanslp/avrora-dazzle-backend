@@ -24,4 +24,4 @@ const mainCategorySchema = new mongoose.Schema(
 );
 
 
-module.exports = mongoose.model('MainCategory', mainCategorySchema);
+export default mongoose.model('MainCategory', mainCategorySchema);

@@ -7,6 +7,7 @@ import authRouter from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
 import coupenRouter from "./routes/coupenRoutes.js";
+import categoryRouter from "./routes/categoryRoute.js"
 
 
 dotenv.config();
@@ -43,6 +44,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/cart", cartRoutes);
   app.use("/api/user", userRouter);
   app.use("/api/coupen", coupenRouter);
+  app.use("/api/category", categoryRouter);
   const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
