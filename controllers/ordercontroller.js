@@ -8,6 +8,7 @@ const createOrder = async (req,res) => {
             shippingAddress,
             coupon,
             paymentMethod,
+            email
         } = req.body;
 
         const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
