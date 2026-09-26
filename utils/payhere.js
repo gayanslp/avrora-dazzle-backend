@@ -17,6 +17,9 @@ export const verifyPayHereSignature = (merchantId, orderId, payhereAmount, payhe
   const localSig = getMd5Hash(
     merchantId + orderId + payhereAmount + payhereCurrency + statusCode + hashedSecret
   );
-  return localSig === md5sig;
+  if (typeof md5sig !== 'string') return false;
+  const a = Buffer.from(localSig, 'utf8');
+  const b = Buffer.from(md5sig.toUpperCase(), 'utf8');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 };
 
