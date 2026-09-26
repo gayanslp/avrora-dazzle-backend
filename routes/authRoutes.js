@@ -15,8 +15,8 @@ const otpLimiter = rateLimit({
   }
 });
 
-authRouter.use('/send-otp', otpLimiter);
-authRouter.use('/verify-otp', otpLimiter);
+// authRouter.use('/send-otp', otpLimiter);
+// authRouter.use('/verify-otp', otpLimiter);
 authRouter.post('/send-otp', sendOtp);
 authRouter.post('/verify-otp', verifyOtp);
 

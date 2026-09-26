@@ -33,6 +33,7 @@ const createOrder = async (req,res) => {
         const grandTotal = itemsTotal - discount + shipping;
         const order = new Order({
             user: req.user.userId,
+            userEmail: email,
             items: orderItems,
             shippingAddress,
             coupon: coupon || null,

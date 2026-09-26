@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import Otp from "../models/otp.js";
 import dotenv from 'dotenv';
 import sendEmail from '../utils/sendEmail.js';
-import User from "../models/User.js";      // ✅ Add this
+import User from "../models/User.js";    
 import jwt from 'jsonwebtoken';
 // 1. Send OTP to email
 
@@ -107,6 +107,7 @@ export async function verifyOtp(req, res) {
             user: {
                 id: user._id,
                 email: user.email,
+                role: user.role,
             }
         });
 
