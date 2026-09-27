@@ -42,6 +42,8 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
     process.exit(1);
   });
 
+  // test
+
 
   app.use("/api/auth", authRouter);
   app.use("/api/cart", cartRoutes);
