@@ -6,6 +6,7 @@ import cartRoutes from "./routes/cartroutes.js";
 import authRouter from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
 import coupenRouter from "./routes/coupenRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js"
 import paymentRouter from "./routes/paymentRoutes.js";
@@ -45,6 +46,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/auth", authRouter);
   app.use("/api/cart", cartRoutes);
   app.use("/api/user", userRouter);
+  app.use("/api/product", productRouter);
   app.use("/api/coupen", coupenRouter);
   app.use("/api/category", categoryRouter);
   app.use("/api/payment", paymentRouter);
