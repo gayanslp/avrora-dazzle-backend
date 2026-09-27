@@ -13,4 +13,6 @@ router.post('/',authMiddleware, addToCart);
 router.delete('/:itemId', authMiddleware, removeFromCart);  
 router.get('/wishlist', authMiddleware, getWishlist);
 router.post('/wishlist/:productId', authMiddleware, toggleWishlist);
+
+
 export default router;
