@@ -10,11 +10,14 @@ import productRouter from "./routes/productRoutes.js";
 import coupenRouter from "./routes/coupenRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js"
 import paymentRouter from "./routes/paymentRoutes.js";
+import cors from "cors";
 
 import orderRoutes from "./routes/orderroutes.js";
 
 dotenv.config();
 const app = express();
+
+app.use(cors());
 
 const appLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -26,6 +29,8 @@ const appLimiter = rateLimit({
     message: "Too many requests from this IP, please try again later."
   }
 });
+
+
 
 app.use(appLimiter);
 app.use(bodyParser.json());
@@ -55,6 +60,8 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/order", orderRoutes);
 
   const PORT = process.env.PORT;
+
+  
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -8,6 +8,7 @@ const createOrder = async (req,res) => {
             shippingAddress,
             coupon,
             paymentMethod,
+            email
         } = req.body;
 
         const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
@@ -32,6 +33,7 @@ const createOrder = async (req,res) => {
         const grandTotal = itemsTotal - discount + shipping;
         const order = new Order({
             user: req.user.userId,
+            userEmail: email,
             items: orderItems,
             shippingAddress,
             coupon: coupon || null,
