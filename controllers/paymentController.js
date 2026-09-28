@@ -3,10 +3,17 @@ import { generatePayHereHash } from "../utils/payhere.js";
 export async function generatePaymentHash(req,res){
     try{
         const {orderId} = req.body;
+        console.log("orderId is: ",orderId );
+        
     const order = await Order.findById(orderId);
+
+    console.log("order details: ", order);
+    
     if (!order) {
         return res.status(404).json({ success: false, message: 'Order not found' });
     }
+
+   
 
     const merchantId = process.env.PAYHERE_MERCHANT_ID;
     const merchantSecret = process.env.PAYHERE_MERCHANT_SECRET;
