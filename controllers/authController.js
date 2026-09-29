@@ -23,8 +23,7 @@ export async function sendOtp(req, res) {
             });
         }
 
-        const normalizedEmail = email.toLowerCase();
-
+        const normalizedEmail = email.toLowerCase().trim();
 
         const otp = crypto.randomInt(100000, 1000000).toString(); // Generate 6-digit OTP
         const otpHash = hashOtp(otp);
@@ -34,33 +33,34 @@ export async function sendOtp(req, res) {
         const newOtp = new Otp({ email: normalizedEmail, otpHash });
         await newOtp.save();
 
-        // Here you would typically send the OTP via email
-        // For now, we'll just log it
+        console.log(`\n=========================================`);
+        console.log(`🔑 [LOGIN OTP for ${normalizedEmail}]: ${otp}`);
+        console.log(`=========================================\n`);
+
         await sendEmail({
             to: normalizedEmail,
-            subject: 'Your Login OTP Code',
-            text: `Your OTP for login is ${otp}. Valid for 5 minutes.`,
+            subject: `${otp} is your Avrora Dazzle verification code`,
+            text: `Your login verification code is ${otp}. It will expire in 5 minutes.`,
             html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-            <h2>Login Verification Code</h2>
-            <p>Use the following OTP to log in to your account:</p>
-            <h1 style="color: #4CAF50; letter-spacing: 5px;">${otp}</h1>
-            <p>This code is valid for <b>5 minutes</b>.</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 16px;">
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 700; margin-bottom: 8px;">Login Verification Code</h2>
+            <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">Use the verification code below to sign in to your Avrora Dazzle account:</p>
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
+                <span style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #0f172a; font-family: monospace;">${otp}</span>
+            </div>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin: 0;">This code is valid for <b>5 minutes</b>. Never share this code with anyone.</p>
         </div>
     `,
         });
 
-
-
-
         res.status(200).json({
             success: true,
-            message: 'OTP sent successfully'
+            message: 'OTP sent successfully. Please check your inbox or spam folder.'
         });
     }
     catch (error) {
         console.error('Error sending OTP:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 }
 
