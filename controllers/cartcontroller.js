@@ -48,8 +48,8 @@ const addToCart = async (req, res) => {
 };
 const removeFromCart = async (req, res) => {
     try {
-        const {itemId} = req.params;
-        let cart = await Cart.findOne({ 
+        const { itemId } = req.params;
+        let cart = await Cart.findOne({
             user: req.user.userId
         });
         if (!cart) {
@@ -73,26 +73,77 @@ const removeFromCart = async (req, res) => {
         });
     }
 }
+const mergeCart = async (req, res) => {
+    try {
+        const { items } = req.body; // array of items from frontend localStorage
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            // Nothing to merge
+            return res.status(200).json({ message: 'No items to merge' });
+        }
+
+        let cart = await Cart.findOne({ user: req.user.userId });
+        
+        if (!cart) {
+            cart = new Cart({
+                user: req.user.userId,
+                items: items.map(item => ({
+                    product: item.product,
+                    qty: item.qty,
+                    size: item.size,
+                    color: item.color
+                })),
+            });
+            await cart.save();
+            return res.status(200).json(cart);
+        }
+
+        // Cart exists, let's merge
+        for (const incomingItem of items) {
+            const existingItem = cart.items.find(
+                item => item.product.toString() === incomingItem.product && item.size === incomingItem.size && item.color === incomingItem.color
+            );
+            if (existingItem) {
+                // If the item exists, we increase its quantity
+                existingItem.qty += incomingItem.qty;
+            } else {
+                // Otherwise, add new item
+                cart.items.push({
+                    product: incomingItem.product,
+                    qty: incomingItem.qty,
+                    size: incomingItem.size,
+                    color: incomingItem.color
+                });
+            }
+        }
+
+        await cart.save();
+        res.status(200).json(cart);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message,
+        });
+    }
+};
 const getWishlist = async (req, res) => {
-    try{
+    try {
         const user = await User.findById(req.user.userId).populate('wishlist');
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: 'User not found',
             });
         }
         res.status(200).json(user.wishlist);
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
             message: error.message,
         });
     }
 }
 const toggleWishlist = async (req, res) => {
-    try{
+    try {
         const { productId } = req.params;
         const user = await User.findById(req.user.userId);
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: 'User not found',
             });
@@ -110,11 +161,11 @@ const toggleWishlist = async (req, res) => {
             wishlist: user.wishlist,
         });
 
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
             message: error.message,
         });
     };
 };
 
-export { getCart, addToCart, removeFromCart, getWishlist, toggleWishlist };
+export { getCart, addToCart, removeFromCart, getWishlist, toggleWishlist, mergeCart };

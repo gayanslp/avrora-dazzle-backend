@@ -1,17 +1,25 @@
+import Order from "../models/ordermodel.js";
 import { generatePayHereHash } from "../utils/payhere.js";
 import Order from "../models/ordermodel.js"
 
 export async function generatePaymentHash(req,res){
     try{
         const {orderId} = req.body;
+        console.log("orderId is: ",orderId );
+        
     const order = await Order.findById(orderId);
+
+    console.log("order details: ", order);
+    
     if (!order) {
         return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
+   
+
     const merchantId = process.env.PAYHERE_MERCHANT_ID;
     const merchantSecret = process.env.PAYHERE_MERCHANT_SECRET;
-    const amount = order.totalAmount;
+    const amount = order.grandTotal;
     const currency = 'LKR';
 
     const hash = generatePayHereHash(merchantId, order._id.toString(), amount, currency, merchantSecret);
@@ -26,11 +34,11 @@ export async function generatePaymentHash(req,res){
 
     //   Remember to change this acording to Order model
       customer: {
-        firstName: order.shippingAddress.firstName,
-        lastName: order.shippingAddress.lastName,
+        firstName: order.shippingAddress.fullName.split(' ')[0],
+        lastName: order.shippingAddress.fullName.split(' ')[1] || '',
         email: order.userEmail,
         phone: order.shippingAddress.phone,
-        address: order.shippingAddress.address,
+        address: order.shippingAddress.street,
         city: order.shippingAddress.city,
         country: 'Sri Lanka'
       }
@@ -79,7 +87,7 @@ export async function handlePayHereNotification(req, res) {
     const order = await Order.findById(order_id);
     if (!order) return res.status(404).send('Order not found');
 
-    if (Number(payhere_amount).toFixed(2) !== Number(order.totalAmount).toFixed(2) || payhere_currency !== 'LKR') {
+    if (Number(payhere_amount).toFixed(2) !== Number(order.grandTotal).toFixed(2) || payhere_currency !== 'LKR') {
       console.error('PayHere amount/currency mismatch for order', order_id);
       return res.status(400).send('Amount mismatch');
     }
