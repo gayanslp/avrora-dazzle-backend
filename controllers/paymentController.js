@@ -1,6 +1,7 @@
 import Order from "../models/ordermodel.js";
 import { generatePayHereHash } from "../utils/payhere.js";
 
+
 export async function generatePaymentHash(req,res){
     try{
         const {orderId} = req.body;
