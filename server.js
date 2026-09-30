@@ -13,6 +13,7 @@ import paymentRouter from "./routes/paymentRoutes.js";
 import cors from "cors";
 
 import orderRoutes from "./routes/orderroutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/category", categoryRouter);
   app.use("/api/payment", paymentRouter);
   app.use("/api/order", orderRoutes);
+  app.use("/api/upload", uploadRoutes);
 
   const PORT = process.env.PORT;
 

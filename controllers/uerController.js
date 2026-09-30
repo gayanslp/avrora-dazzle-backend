@@ -110,3 +110,15 @@ export function isAdmin(req) {
         });
     }
 }
+
+export async function getAllUsers(req, res) {
+    try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+        const users = await User.find({}).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}

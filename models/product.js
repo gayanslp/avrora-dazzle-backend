@@ -33,7 +33,16 @@ const productSchema = new mongoose.Schema(
                 type: String,
                 trim: true
             }
-        ]
+        ],
+        category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'MainCategory',
+            required: true
+        },
+        subCategory: {
+            type: String,
+            trim: true
+        }
     },
     {
         timestamps: true
