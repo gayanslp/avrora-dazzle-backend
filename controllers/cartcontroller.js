@@ -39,6 +39,7 @@ const addToCart = async (req, res) => {
         }
 
         await cart.save();
+        await cart.populate('items.product');
         res.status(200).json(cart);
     } catch (error) {
         res.status(500).json({
@@ -57,14 +58,18 @@ const removeFromCart = async (req, res) => {
                 message: 'Cart not found',
             });
         }
-        const item = cart.items.id(itemId);
-        if (!item) {
+        // Filter out the item by _id or product id
+        const initialLength = cart.items.length;
+        cart.items = cart.items.filter(item => item._id.toString() !== itemId && item.product.toString() !== itemId);
+        
+        if (cart.items.length === initialLength) {
             return res.status(404).json({
                 message: 'Item not found in cart',
             });
         }
-        item.deleteOne();
+        
         await cart.save();
+        await cart.populate('items.product');
         res.status(200).json(cart);
 
     } catch (error) {
@@ -117,11 +122,51 @@ const mergeCart = async (req, res) => {
         }
 
         await cart.save();
+        await cart.populate('items.product');
         res.status(200).json(cart);
     } catch (error) {
         res.status(500).json({
             message: error.message,
         });
+    }
+};
+
+const updateCartItemQuantity = async (req, res) => {
+    try {
+        const { itemId } = req.params;
+        const { qty } = req.body;
+        
+        let cart = await Cart.findOne({ user: req.user.userId });
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+        
+        const item = cart.items.find(i => i._id.toString() === itemId || i.product.toString() === itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found in cart' });
+        }
+        
+        item.qty = qty;
+        await cart.save();
+        await cart.populate('items.product');
+        res.status(200).json(cart);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const clearCart = async (req, res) => {
+    try {
+        let cart = await Cart.findOne({ user: req.user.userId });
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+        
+        cart.items = [];
+        await cart.save();
+        res.status(200).json(cart);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 const getWishlist = async (req, res) => {
@@ -168,4 +213,4 @@ const toggleWishlist = async (req, res) => {
     };
 };
 
-export { getCart, addToCart, removeFromCart, getWishlist, toggleWishlist, mergeCart };
+export { getCart, addToCart, removeFromCart, getWishlist, toggleWishlist, mergeCart, updateCartItemQuantity, clearCart };
