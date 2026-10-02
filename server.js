@@ -11,6 +11,7 @@ import coupenRouter from "./routes/coupenRoutes.js";
 import categoryRouter from "./routes/categoryRoute.js"
 import paymentRouter from "./routes/paymentRoutes.js";
 import cors from "cors";
+import subCategoryRoutes from "./routes/subCategoryRoute.js";
 
 import orderRoutes from "./routes/orderroutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
@@ -60,6 +61,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/payment", paymentRouter);
   app.use("/api/order", orderRoutes);
   app.use("/api/upload", uploadRoutes);
+  app.use("/api/sub-category", subCategoryRoutes);
 
   const PORT = process.env.PORT;
 

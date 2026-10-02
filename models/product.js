@@ -40,8 +40,9 @@ const productSchema = new mongoose.Schema(
             required: true
         },
         subCategory: {
-            type: String,
-            trim: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'SubCategory',
+            required: true
         }
     },
     {
