@@ -17,6 +17,10 @@ const subCategorySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "MainCategory",
     required: true
+  },
+  image: {
+    type: String,
+    trim: true
   }
 });
 

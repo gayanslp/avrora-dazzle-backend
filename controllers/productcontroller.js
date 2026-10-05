@@ -2,7 +2,10 @@ import Product from "../models/product.js";
 
 export async function getProducts(req, res) {
     try {
-        const products = await Product.find();
+        const products = await Product.find()
+            .populate('category')
+            .populate('subCategory')
+            .sort({ createdAt: -1, _id: -1 });
         res.status(200).json({
             success: true,
             count: products.length,
