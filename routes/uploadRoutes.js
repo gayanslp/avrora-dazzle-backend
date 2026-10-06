@@ -6,11 +6,11 @@ import  authMiddleware  from '../middleware/AuthMiddleware.js';
 const router = express.Router();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 15 * 1024 * 1024 }
+});
 
-// Only admins should upload images, but authMiddleware covers the basic check,
-// we can add admin check here too or inside the controller. 
-// Assuming authMiddleware checks for user token.
-router.post('/', authMiddleware, upload.single('image'), uploadImage);
+router.post('/', authMiddleware, upload.any(), uploadImage);
 
 export default router;

@@ -15,11 +15,24 @@ import subCategoryRoutes from "./routes/subCategoryRoute.js";
 
 import orderRoutes from "./routes/orderroutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
 
 app.use(cors());
+
+// Serve static uploads folder
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use("/uploads", express.static(uploadsDir));
 
 const appLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
