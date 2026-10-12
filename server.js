@@ -15,6 +15,7 @@ import subCategoryRoutes from "./routes/subCategoryRoute.js";
 
 import orderRoutes from "./routes/orderroutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import settingRoutes from "./routes/settingRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -75,6 +76,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/order", orderRoutes);
   app.use("/api/upload", uploadRoutes);
   app.use("/api/sub-category", subCategoryRoutes);
+  app.use("/api/settings", settingRoutes);
 
   const PORT = process.env.PORT;
 

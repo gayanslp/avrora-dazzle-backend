@@ -9,6 +9,12 @@ const getCart = async (req, res) => {
                 items: [],
             });
         }
+        // Filter out items where the product was deleted
+        const initialLength = cart.items.length;
+        cart.items = cart.items.filter(item => item && item.product != null);
+        if (cart.items.length !== initialLength) {
+            await cart.save();
+        }
         res.status(200).json(cart);
     } catch (error) {
         res.status(500).json({

@@ -1,5 +1,7 @@
 import Order from '../models/ordermodel.js';
 import Cart from '../models/cartmodel.js';
+import Coupon from '../models/coupen.js';
+import Setting from '../models/settingModel.js';
 import mongoose from 'mongoose';
 
 const createOrder = async (req,res) => {
@@ -13,12 +15,30 @@ const createOrder = async (req,res) => {
 
         const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
 
-        if(!cart || cart.items.length === 0){
+        if(!cart || !Array.isArray(cart.items) || cart.items.length === 0){
             return res.status(400).json({
                 message: 'Cart is empty',
             });
         }
-        const orderItems = cart.items.map(item => ({
+
+        // Filter out any stale/deleted products
+        const validItems = cart.items.filter(item => item && item.product && item.product._id);
+
+        if (validItems.length === 0) {
+            cart.items = [];
+            await cart.save();
+            return res.status(400).json({
+                message: 'Your cart items are no longer available. Please select products again.',
+            });
+        }
+
+        // If there were stale/deleted items in the cart, keep DB clean
+        if (validItems.length !== cart.items.length) {
+            cart.items = validItems;
+            await cart.save();
+        }
+
+        const orderItems = validItems.map(item => ({
             product: item.product._id,
             name: item.product.name,
             price: item.product.price,
@@ -27,21 +47,44 @@ const createOrder = async (req,res) => {
             color: item.color,
         }));
         const itemsTotal = orderItems.reduce((total, item) => total + item.price * item.qty, 0);
-        const discount = 0;
-        const shipping = 0;
+        let discount = 0;
+        let appliedCouponId = null;
 
-        const grandTotal = itemsTotal - discount + shipping;
+        if (coupon) {
+            const foundCoupon = mongoose.Types.ObjectId.isValid(coupon)
+                ? await Coupon.findById(coupon)
+                : await Coupon.findOne({ code: String(coupon).toUpperCase(), isActive: true });
+
+            if (foundCoupon && (!foundCoupon.expiresAt || new Date(foundCoupon.expiresAt) >= new Date()) && itemsTotal >= (foundCoupon.minOrder || 0)) {
+                appliedCouponId = foundCoupon._id;
+                if (foundCoupon.type === 'percent') {
+                    discount = (itemsTotal * foundCoupon.value) / 100;
+                } else if (foundCoupon.type === 'fixed') {
+                    discount = foundCoupon.value;
+                }
+                if (discount > itemsTotal) discount = itemsTotal;
+            }
+        }
+
+        // Retrieve admin configured delivery fee from store settings
+        const storeSettings = await Setting.findOne({ key: 'store_settings' });
+        const shipping = storeSettings ? Number(storeSettings.deliveryFee) || 0 : 350;
+        const grandTotal = Math.max(0, itemsTotal - discount + shipping);
+
+        // COD is removed; only online payments like PayHere Gateway are accepted
+        const sanitizedPaymentMethod = 'PayHere';
+
         const order = new Order({
             user: req.user.userId,
-            userEmail: email,
+            userEmail: email || req.user.email,
             items: orderItems,
             shippingAddress,
-            coupon: coupon || null,
+            coupon: appliedCouponId,
             itemsTotal,
             discount,
             shipping,
             grandTotal,
-            paymentMethod,
+            paymentMethod: sanitizedPaymentMethod,
             status: 'pending',
         });
         await order.save();
@@ -49,6 +92,7 @@ const createOrder = async (req,res) => {
         await cart.save();
         res.status(201).json(order);
     } catch (error) {
+        console.error('Error creating order:', error);
         res.status(500).json({
             message: error.message,
         });
@@ -95,9 +139,15 @@ const applyCoupon = async (req, res) => {
     try {
         const { code, orderTotal } = req.body;
 
+        if (!code || typeof code !== 'string' || !code.trim()) {
+            return res.status(400).json({
+                message: 'Please enter a coupon code',
+            });
+        }
+
         const coupon = await Coupon.findOne({
-            code: code.toUpperCase(),
-            active: true,
+            code: code.trim().toUpperCase(),
+            isActive: true,
         });
 
         if (!coupon) {
@@ -106,33 +156,36 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        if (coupon.expiresAt && coupon.expiresAt < new Date()) {
+        if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
             return res.status(400).json({
                 message: 'Coupon has expired',
             });
         }
 
-        if (orderTotal < coupon.minOrder) {
+        const total = Number(orderTotal) || 0;
+        if (coupon.minOrder && total < coupon.minOrder) {
             return res.status(400).json({
-                message: `Minimum order amount is ${coupon.minOrder}`,
+                message: `Minimum order amount is Rs ${coupon.minOrder.toLocaleString('en-IN')}`,
             });
         }
 
         let discount = 0;
 
         if (coupon.type === 'percent') {
-            discount = (orderTotal * coupon.value) / 100;
+            discount = (total * coupon.value) / 100;
         } else if (coupon.type === 'fixed') {
             discount = coupon.value;
         }
 
-        if (discount > orderTotal) {
-            discount = orderTotal;
+        if (discount > total) {
+            discount = total;
         }
 
         res.status(200).json({
             coupon: coupon._id,
             code: coupon.code,
+            type: coupon.type,
+            value: coupon.value,
             discount,
         });
 

@@ -25,8 +25,8 @@ const productSchema = new mongoose.Schema(
         },
         colorLabel: {
             type: String,
-            required: true,
-            trim: true
+            trim: true,
+            default: 'Standard'
         },
         images: [
             {
@@ -43,6 +43,27 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'SubCategory',
             required: true
+        },
+        size: [
+            {
+                type: String,
+                trim: true
+            }
+        ],
+        stock: {
+            type: Number,
+            default: 20
+        },
+        description: {
+            type: String,
+            trim: true
+        },
+        sale: {
+            type: Boolean,
+            default: false
+        },
+        originalPrice: {
+            type: Number
         }
     },
     {
