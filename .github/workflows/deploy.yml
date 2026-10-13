@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             sudo bash -c "
-              cd /root/avrora_dazzle/avrora-dazzle-backend || exit 1
+              cd /root/avrora_dazzle || exit 1
               git pull origin main
               docker compose down
               docker compose build --no-cache
