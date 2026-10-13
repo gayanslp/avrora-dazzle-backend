@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to VPS via SSH
+      - name: Deploy Backend via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -20,10 +20,10 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             sudo bash -c "
-              cd /root/avrora_dazzle || exit 1
+              cd /root/avrora_dazzle/avrora-dazzle-backend || exit 1
               git pull origin main
-              docker compose down
-              docker compose build --no-cache
-              docker compose up -d
+              cd /root/avrora_dazzle || exit 1
+              docker compose build --no-cache backend
+              docker compose up -d backend
               docker system prune -f
             "
