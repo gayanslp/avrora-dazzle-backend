@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 import cartRoutes from "./routes/cartroutes.js";
 import authRouter from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
@@ -69,18 +70,13 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   app.use("/api/auth", authRouter);
   app.use("/api/cart", cartRoutes);
   app.use("/api/user", userRouter);
-  app.use("/api/product", productRouter);
-  app.use("/api/coupen", coupenRouter);
-  app.use("/api/category", categoryRouter);
   app.use("/api/payment", paymentRouter);
   app.use("/api/order", orderRoutes);
   app.use("/api/upload", uploadRoutes);
   app.use("/api/sub-category", subCategoryRoutes);
   app.use("/api/settings", settingRoutes);
 
-  const PORT = process.env.PORT;
-
-  
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
